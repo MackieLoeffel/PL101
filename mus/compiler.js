@@ -1,3 +1,4 @@
+//from: http://my.opera.com/GreyWyvern/blog/show.dml/1725165
 Object.prototype.clone = function() {
 	  var newObj = (this instanceof Array) ? [] : {};
 	    for (i in this) {
