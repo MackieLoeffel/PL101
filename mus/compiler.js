@@ -1,14 +1,3 @@
-//from: http://my.opera.com/GreyWyvern/blog/show.dml/1725165
-Object.prototype.clone = function() {
-	  var newObj = (this instanceof Array) ? [] : {};
-	    for (i in this) {
-		        if (i == 'clone') continue;
-			    if (this[i] && typeof this[i] == "object") {
-				          newObj[i] = this[i].clone();
-					      } else newObj[i] = this[i]
-						        } return newObj;
-};
-
 var endTime = function(time, musexpr) {
 	switch(musexpr.tag) {
 		case 'note':
@@ -35,9 +24,14 @@ var createNoteList = function(time, musexpr) {
 	switch(musexpr.tag) {
 		case 'note':
 		case 'rest':
-			var exprCopy = musexpr.clone();
-			if(musexpr.tag === 'note')
-				exprCopy.pitch = pitchToNumber(musexpr.pitch);
+			var exprCopy = {tag: musexpr.tag, dur:musexpr.dur}; 
+			if(musexpr.tag === 'note') {
+				var sign = 0;
+				if(musexpr.hasOwnProperty('sign')) {
+					sign = musexpr.sign === 'b'?-1:(musexpr.sign==='#'?1:0);
+				}
+				exprCopy.pitch = pitchToNumber(musexpr.pitch) + sign;
+			}
 			exprCopy.start = time;
 			return [exprCopy];
 		case 'seq':
@@ -64,7 +58,7 @@ var compile = function(musexpr) {
 var melody_mus = { tag: 'seq',
 	left: { tag:'par',
 		left: { tag:'note', pitch: 'a4', dur: 250},
-		right: { tag:'note', pitch: 'b4', dur: 250} },
+		right: { tag:'note', pitch: 'b4', sign: 'b', dur: 250} },
 	right: { tag: 'seq',
 		left: { tag: 'rest', dur: 500},
 		right: { tag: 'repeat',
