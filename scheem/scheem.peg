@@ -1,0 +1,21 @@
+start =
+    expression
+
+expression =
+    atom
+  / list
+
+spacedexpr =
+	" "+ ex:expression
+    {return ex;}
+
+list =
+	"(" first:expression l:spacedexpr* " "* ")"
+    {return [first].concat(l);}
+
+validchar
+    = [0-9a-zA-Z_?!+-=@#$%^&*/.]
+
+atom =
+    chars:validchar+
+        { return chars.join(""); }
