@@ -1,0 +1,35 @@
+start =
+     seq
+
+seq =
+     _ left:par _ "+" _ right:seq _
+	{ return {tag: 'seq', left: left, right: right}; }
+   / par
+
+par =
+     _ left:primary _ "&" _ right:par _
+	{ return {tag: 'par', left: left, right: right}; }
+   / primary
+
+primary =
+     note
+   / _ "(" _ seq:seq _ ")" _ 
+	{ return seq; }
+
+note =
+     _ s:sign? _ p:pitch _ "[" _ d:duration _ "]" _
+	{ return {tag: 'note', sign: s, pitch: p, dur: d}; }
+
+sign =
+     [#b]
+
+pitch =
+     n:[a-g] o:[1-8]
+	{ return ""+n+o;}
+
+duration =
+     head:[1-9] tail:[0-9]*
+	{ return parseInt(head + tail.join("")); } 
+
+_ =
+     [ \t\n\r]*

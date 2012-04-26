@@ -20,7 +20,7 @@ var pitchToNumber = function(pitchStr) {
 	return 12 + 12 * parseInt(pitchStr.charAt(1)) + pitchOffsetTable[pitchStr.charAt(0)];
 };
 
-var createNoteList = function(time, musexpr) {
+var compileT = function(time, musexpr) {
 	switch(musexpr.tag) {
 		case 'note':
 		case 'rest':
@@ -35,14 +35,14 @@ var createNoteList = function(time, musexpr) {
 			exprCopy.start = time;
 			return [exprCopy];
 		case 'seq':
-			return createNoteList(time,musexpr.left).concat(createNoteList(endTime(time,musexpr.left),musexpr.right));
+			return compileT(time,musexpr.left).concat(compileT(endTime(time,musexpr.left),musexpr.right));
 		case 'par':
-			return createNoteList(time,musexpr.left).concat(createNoteList(time,musexpr.right));
+			return compileT(time,musexpr.left).concat(compileT(time,musexpr.right));
 		case 'repeat':
 			var list = [];
 			var curTime = time;
 			for(var i = 0; i < musexpr.count; i++) {
-				list = list.concat(createNoteList(curTime,musexpr.section));
+				list = list.concat(compileT(curTime,musexpr.section));
 				curTime = endTime(curTime, musexpr.section);
 			}
 			return list;
@@ -52,7 +52,7 @@ var createNoteList = function(time, musexpr) {
 };
 
 var compile = function(musexpr) {
-	return createNoteList(0,musexpr);
+	return compileT(0,musexpr);
 };
 
 var melody_mus = { tag: 'seq',
@@ -64,6 +64,7 @@ var melody_mus = { tag: 'seq',
 		right: { tag: 'repeat',
 			section: { tag: 'note', pitch: 'd4', dur: 500},
 			count: 4 } } };
+melody_mus ={"tag":"par","left":{"tag":"note","sign":"","pitch":"a3","dur":100},"right":{"tag":"seq","left":{"tag":"note","sign":"","pitch":"c5","dur":222},"right":{"tag":"par","left":{"tag":"note","sign":"","pitch":"c3","dur":100},"right":{"tag":"note","sign":"","pitch":"f7","dur":150}}}};
 
 console.log(melody_mus);
 console.log(compile(melody_mus));
