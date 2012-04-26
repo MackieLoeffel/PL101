@@ -4,18 +4,26 @@ start =
 expression =
     atom
   / list
-
-spacedexpr =
-	" "+ ex:expression
-    {return ex;}
+  / quote
 
 list =
-	"(" first:expression l:spacedexpr* " "* ")"
-    {return [first].concat(l);}
+	_ "(" _ ex:expression+ _ ")" _
+    {return ex;}
+
+_ =
+     comment
+  /  [ \t\n]*
+
+comment =
+	"\n;;" .* "\n" 
+
+quote =
+	_ "'" ex:expression _
+	{return ["quote",ex];}
 
 validchar
-    = [0-9a-zA-Z_?!+-=@#$%^&*/.]
+    = [0-9a-zA-Z_?!+\-=@#$%^&*/.]
 
 atom =
-    chars:validchar+
+    _ chars:validchar+ _
         { return chars.join(""); }

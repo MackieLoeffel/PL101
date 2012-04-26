@@ -8,7 +8,10 @@ var tests = [ {code: "a", result: "a"},
 	{code: "()", result: undefined},
 	{code: "(+ 1 (* x 3))", result: ["+", "1", ["*", "x", "3"]]},
 	{code: "(* n (factorial (- n 1)))", result: ["*", "n", ["factorial", ["-", "n", "1"]]]},
-	{code: "(+   1   (*   x  3))", result: ["+", "1", ["*", "x", "3"]]}];
+	{code: "(\t+   1   (*   x  3   )  )", result: ["+", "1", ["*", "x", "3"]]},
+	{code: "(if (= n 0) 1 \n\t(* n x))", result: ["if",["=","n","0"],"1",["*","n","x"]]},
+	{code: "'a", result: ["quote", "a"]},
+	{code: "(a b \n;; comment...\n)", result:["a","b"]}];
 
 fs.readFile('scheem.peg', 'ascii', function(err, data) {
 	console.log(data);
